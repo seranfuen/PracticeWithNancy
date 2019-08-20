@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -19,6 +20,16 @@ namespace Chapter4MicroserviceClient
                 var response = await client.GetAsync($"/users/{userId}");
                 var readAsStringAsync = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<LoyaltyProgramUser>(readAsStringAsync);
+            }
+        }
+
+        public async Task<IEnumerable<Event>> GetEvents()
+        {
+            using (var client = InitializeClient())
+            {
+                var response = await client.GetAsync($"/events?start={1}&end={long.MaxValue}");
+                var readAsStringAsync = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<Event>>(readAsStringAsync);
             }
         }
 

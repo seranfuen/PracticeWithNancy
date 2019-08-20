@@ -18,6 +18,7 @@ namespace Chapter4
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IUsersStore, MemoryUsersStore>();
+            services.AddSingleton<IEventStore, EventStore>();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Chapter4MicroserviceClient
@@ -28,7 +29,7 @@ namespace Chapter4MicroserviceClient
             while (true)
             {
                 Console.WriteLine(
-                    "Type 'Exit' to exit. Type 'Query' to query user. Type 'NewUser' to add new user. Type 'UpdateUser' to update existing user");
+                    "Type 'Exit' to exit. Type 'Query' to query user. Type 'NewUser' to add new user. Type 'UpdateUser' to update existing user. 'Events' to see all events.");
                 Console.WriteLine();
 
                 var line = Console.ReadLine()?.Trim();
@@ -49,12 +50,40 @@ namespace Chapter4MicroserviceClient
                 {
                     QueryUser();
                 }
+                else if (string.Equals("Events", line, StringComparison.OrdinalIgnoreCase))
+                {
+                    ShowEvents();
+                }
                 else
                 {
                     Console.WriteLine("Unknown command");
                     Console.WriteLine();
                 }
             }
+        }
+
+        private static void ShowEvents()
+        {
+            var client = new LoyaltyProgramClient();
+            var events = client.GetEvents().Result?.ToList();
+
+            if (events?.Any() != true)
+            {
+                Console.WriteLine("No events found!");
+            }
+            else
+            {
+                foreach (var eventData in events.OrderBy(x => x.OccuredAt))
+                {
+                    Console.WriteLine($"#{eventData.SequenceNumber}: ");
+                    Console.Write("Event name: ");
+                    Console.Write(eventData.Name);
+                    Console.Write(". Occured at: ");
+                    Console.WriteLine(eventData.OccuredAt);
+                }
+            }
+
+            Console.WriteLine();
         }
 
         private static void QueryUser()

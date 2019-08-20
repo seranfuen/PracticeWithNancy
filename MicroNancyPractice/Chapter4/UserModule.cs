@@ -7,13 +7,14 @@ namespace Chapter4
     {
         private readonly IUsersStore _userStore;
 
-        public UserModule(IUsersStore userStore) : base("/users")
+        public UserModule(IUsersStore userStore, IEventStore eventStore) : base("/users")
         {
             _userStore = userStore;
             Post("/", _ =>
             {
                 var newUser = this.Bind<LoyalProgramUser>();
                 AddRegisteredUser(newUser);
+                eventStore.PutEvent("UserAdded", newUser);
                 return CreatedResponse(newUser);
             });
 
@@ -22,6 +23,7 @@ namespace Chapter4
                 int userId = parameter.userId;
                 var updatedUser = this.Bind<LoyalProgramUser>();
                 _userStore.UpdateUser(userId, updatedUser);
+                eventStore.PutEvent("UserUpdated", updatedUser);
                 return updatedUser;
             });
 
